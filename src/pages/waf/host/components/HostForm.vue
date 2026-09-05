@@ -684,8 +684,43 @@
                 </t-input>
               </t-tooltip>
             </t-form-item>
+            <t-form-item v-if="formData.is_enable_http_auth_base === '1'" :label="t('page.host.http_auth_session_ttl')">
+              <t-tooltip :content="t('page.host.http_auth_session_ttl_tips')" placement="top" :overlay-style="{ width: '400px' }" show-arrow>
+                <t-input-number v-model="httpAuthConfigData.session_ttl" theme="column" :min="1" :max="525600" :style="{ width: '180px' }" />
+              </t-tooltip>
+              <span style="margin-left: 8px; color: #888">{{ t('page.host.unit_minute') }}</span>
+            </t-form-item>
+            <t-form-item v-if="formData.is_enable_http_auth_base === '1'" :label="t('page.host.http_auth_idle_timeout')">
+              <t-tooltip
+                :content="formData.http_auth_base_type === 'custom' ? t('page.host.http_auth_idle_timeout_tips') : t('page.host.http_auth_idle_timeout_unsupported')"
+                placement="top"
+                :overlay-style="{ width: '400px' }"
+                show-arrow
+              >
+                <t-input-number
+                  v-model="httpAuthConfigData.idle_timeout"
+                  theme="column"
+                  :min="0"
+                  :max="525600"
+                  :disabled="formData.http_auth_base_type !== 'custom'"
+                  :style="{ width: '180px' }"
+                />
+              </t-tooltip>
+              <span style="margin-left: 8px; color: #888">{{ t('page.host.http_auth_idle_timeout_hint') }}</span>
+            </t-form-item>
+            <t-form-item v-if="formData.is_enable_http_auth_base === '1'" :label="t('page.host.http_auth_bind_ip')">
+              <t-tooltip :content="t('page.host.http_auth_bind_ip_tips')" placement="top" :overlay-style="{ width: '450px' }" show-arrow>
+                <t-radio-group v-model="httpAuthConfigData.bind_ip">
+                  <t-radio value="0">{{ t('common.off') }}</t-radio>
+                  <t-radio value="1">{{ t('common.on') }}</t-radio>
+                </t-radio-group>
+              </t-tooltip>
+            </t-form-item>
             <t-form-item v-if="formData.is_enable_http_auth_base === '1'">
               <http-auth-base :prop-host-code="formData.code" />
+            </t-form-item>
+            <t-form-item v-if="formData.is_enable_http_auth_base === '1' && formData.code">
+              <http-auth-session :prop-host-code="formData.code" />
             </t-form-item>
           </t-tab-panel>
 
@@ -895,6 +930,7 @@ import {
 } from 'tdesign-icons-vue-next';
 import LoadBalance from '@/pages/waf/loadbalance/index.vue';
 import HttpAuthBase from '@/pages/waf/http_auth_base/index.vue';
+import HttpAuthSession from '@/pages/waf/http_auth_session/index.vue';
 import HealthyConfig from './HealthyConfig.vue';
 import CaptchaConfig from './CaptchaConfig.vue';
 import StaticSiteConfig from './StaticSiteConfig.vue';
@@ -917,6 +953,7 @@ import {
   INITIAL_ANTILEECH,
   INITIAL_SSL_DATA,
   INITIAL_CACHE,
+  INITIAL_HTTP_AUTH,
   INITIAL_STATIC_SITE,
   INITIAL_TRANSPORT,
   INITIAL_CUSTOM_HEADERS,
@@ -1316,6 +1353,7 @@ const healthyConfigData = ref<Record<string, any>>({ ...INITIAL_HEALTHY });
 const captchaConfigData = ref<Record<string, any>>({ ...INITIAL_CAPTCHA });
 const antiLeechConfigData = ref<Record<string, any>>({ ...INITIAL_ANTILEECH });
 const cacheConfigData = ref<Record<string, any>>({ ...INITIAL_CACHE });
+const httpAuthConfigData = ref<Record<string, any>>({ ...INITIAL_HTTP_AUTH });
 const staticSiteConfigData = ref<Record<string, any>>({ ...INITIAL_STATIC_SITE });
 const transportConfigData = ref<Record<string, any>>({ ...INITIAL_TRANSPORT });
 const customHeadersConfigData = ref<Record<string, any>>({ ...INITIAL_CUSTOM_HEADERS });
@@ -1704,6 +1742,26 @@ watch(
       }
     } else {
       antiLeechConfigData.value = { ...INITIAL_ANTILEECH };
+    }
+
+    // 解析网站密码访问的时效配置。
+    // 空串是存量站点的常态，此时必须落到 INITIAL_HTTP_AUTH（等价现状），不能是空对象——
+    // 空对象会让输入框显示空白，用户一保存就把 0 提交上去，等于所有人一登录就掉线。
+    if (fd.http_auth_json && fd.http_auth_json !== '') {
+      try {
+        const ha = JSON.parse(fd.http_auth_json);
+        httpAuthConfigData.value = {
+          session_ttl: (ha.session_ttl || INITIAL_HTTP_AUTH.session_ttl).toString(),
+          idle_timeout: (ha.idle_timeout || 0).toString(),
+          // bind_ip 是显式三态：给了 0 就是用户主动关掉，不能当缺省再拉回 1；
+          // 但整份 JSON 没这个键时（老配置）必须保持 1
+          bind_ip: (ha.bind_ip === undefined || ha.bind_ip === null ? 1 : ha.bind_ip).toString(),
+        };
+      } catch {
+        httpAuthConfigData.value = { ...INITIAL_HTTP_AUTH };
+      }
+    } else {
+      httpAuthConfigData.value = { ...INITIAL_HTTP_AUTH };
     }
 
     // 解析缓存配置
@@ -2173,6 +2231,16 @@ const onSubmit: FormProps['onSubmit'] = ({ validateResult, firstError }) => {
       cache_dir: cacheConfigData.value.cache_dir,
       max_file_size_mb: parseFloat(cacheConfigData.value.max_file_size_mb),
       max_memory_size_mb: parseFloat(cacheConfigData.value.max_memory_size_mb),
+    });
+
+    // 处理网站密码访问的时效配置
+    // ⚠️ 同样是一张白名单：新增字段必须同时加进来，漏了就是静默丢弃。
+    // session_ttl 兜底 1440 而不是 0：0 会让后端按「非法值」回落，虽然结果一样，
+    // 但页面上留个 0 让人以为设成了「永不过期」，实际是 24 小时。
+    postdata.http_auth_json = JSON.stringify({
+      session_ttl: parseInt(httpAuthConfigData.value.session_ttl, 10) || 1440,
+      idle_timeout: parseInt(httpAuthConfigData.value.idle_timeout, 10) || 0,
+      bind_ip: parseInt(httpAuthConfigData.value.bind_ip, 10) || 0,
     });
 
     // 处理响应压缩配置

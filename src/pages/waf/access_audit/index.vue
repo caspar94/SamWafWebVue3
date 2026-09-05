@@ -55,7 +55,7 @@
           @page-change="rehandlePageChange"
         >
           <template #category="{ row }">
-            <t-tag :theme="row.category === 'config' ? 'warning' : 'default'" variant="light">{{
+            <t-tag :theme="categoryTheme(row.category)" variant="light">{{
               categoryLabel(row.category)
             }}</t-tag>
           </template>
@@ -99,15 +99,22 @@ const EVENTS = [
   'bypass_ip',
   'bypass_token',
   'config_ssl_export_write',
+  // 网站密码访问（站点级密码那道门），与统一访问认证是两套独立功能，前缀也分开
+  'httpauth_login_ok',
+  'httpauth_login_fail',
+  'httpauth_locked',
+  'httpauth_kick',
+  'httpauth_expired',
+  'httpauth_denied',
 ];
 
 // 审计分类，与后端 AuditCategory* 常量对应
-const CATEGORIES = ['access', 'config'];
+const CATEGORIES = ['access', 'httpauth', 'config'];
 
 // 安全告警级事件用 danger 高亮：票据重放与回跳地址异常在正常流程里不该出现，
 // 一旦出现就意味着有人在主动构造请求。
-const DANGER_EVENTS = ['ticket_replay', 'bad_return_to', 'locked'];
-const WARNING_EVENTS = ['login_fail', 'otp_fail', 'denied'];
+const DANGER_EVENTS = ['ticket_replay', 'bad_return_to', 'locked', 'httpauth_locked'];
+const WARNING_EVENTS = ['login_fail', 'otp_fail', 'denied', 'httpauth_login_fail', 'httpauth_denied'];
 
 const { t } = useI18n();
 
@@ -132,6 +139,13 @@ function categoryLabel(c: string) {
   const key = `page.access.audit.category_${c}`;
   const label = t(key);
   return label === key ? c : label;
+}
+
+// 三个分类各给一个色，混在一张表里时能一眼分开谁是谁
+function categoryTheme(c: string) {
+  if (c === 'config') return 'warning';
+  if (c === 'httpauth') return 'primary';
+  return 'default';
 }
 
 function eventTheme(e: string) {
