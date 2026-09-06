@@ -37,6 +37,14 @@ export function updateManageTrustedProxiesApi(data: Record<string, any>) {
 }
 
 /** 获取管理端引用的 CDN 厂商码 */
+// 管理端「本次访问」真实IP诊断（只回显本次请求自身的判定过程）
+export function manageClientIpProbeApi(params: Record<string, any>) {
+  return request({
+    url: 'vipconfig/manageClientIpProbe',
+    method: 'get',
+    params,
+  });
+}
 export function getManageCDNProviderApi(params: Record<string, any>) {
   return request({
     url: 'vipconfig/getManageCDNProvider',
