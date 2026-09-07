@@ -1857,6 +1857,10 @@ watch(
           require_otp: String(ac.require_otp !== undefined ? ac.require_otp : 0),
           unauth_action: ac.unauth_action != null ? ac.unauth_action : '',
           allow_ip_group_code: ac.allow_ip_group_code != null ? ac.allow_ip_group_code : '',
+          cors_allow_origins: ac.cors_allow_origins != null ? ac.cors_allow_origins : '',
+          cors_allow_methods: ac.cors_allow_methods != null ? ac.cors_allow_methods : '',
+          cors_allow_headers: ac.cors_allow_headers != null ? ac.cors_allow_headers : '',
+          cors_max_age: ac.cors_max_age != null ? ac.cors_max_age : 0,
         };
       } catch (e) {
         console.error('解析access_json失败', e);
@@ -2282,6 +2286,12 @@ const onSubmit: FormProps['onSubmit'] = ({ validateResult, firstError }) => {
       require_otp: parseInt(accessConfigData.value.require_otp, 10) || 0,
       unauth_action: accessConfigData.value.unauth_action || '',
       allow_ip_group_code: accessConfigData.value.allow_ip_group_code || '',
+      // 新增字段务必同步加在这里：本对象是白名单式序列化，
+      // 漏一个就等于每次保存站点都把它悄悄清掉
+      cors_allow_origins: accessConfigData.value.cors_allow_origins || '',
+      cors_allow_methods: accessConfigData.value.cors_allow_methods || '',
+      cors_allow_headers: accessConfigData.value.cors_allow_headers || '',
+      cors_max_age: parseInt(accessConfigData.value.cors_max_age, 10) || 0,
     });
 
     // 处理网页防篡改配置

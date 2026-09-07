@@ -173,6 +173,30 @@
                 <div class="form-tips">{{ t('page.access.config.service_tokens_tips') }}</div>
               </t-form-item>
 
+              <t-divider align="left">{{ t('page.access.config.section_cors') }}</t-divider>
+
+              <t-form-item :label="t('page.access.config.label_cors_allow_origins')" name="cors_allow_origins">
+                <t-textarea
+                  v-model="formData.cors_allow_origins"
+                  :style="{ width: '520px' }"
+                  :autosize="{ minRows: 2, maxRows: 6 }"
+                  placeholder="https://app.example.com&#10;https://admin.example.com:8443"
+                />
+                <div class="form-tips">{{ t('page.access.config.cors_allow_origins_tips') }}</div>
+              </t-form-item>
+              <t-form-item :label="t('page.access.config.label_cors_allow_methods')" name="cors_allow_methods">
+                <t-input v-model="formData.cors_allow_methods" :style="{ width: '520px' }" placeholder="GET,POST,PUT,PATCH,DELETE,OPTIONS" />
+                <div class="form-tips">{{ t('page.access.config.cors_allow_methods_tips') }}</div>
+              </t-form-item>
+              <t-form-item :label="t('page.access.config.label_cors_allow_headers')" name="cors_allow_headers">
+                <t-input v-model="formData.cors_allow_headers" :style="{ width: '520px' }" placeholder="Content-Type,Authorization,X-Requested-With" />
+                <div class="form-tips">{{ t('page.access.config.cors_allow_headers_tips') }}</div>
+              </t-form-item>
+              <t-form-item :label="t('page.access.config.label_cors_max_age')" name="cors_max_age">
+                <t-input-number v-model="formData.cors_max_age" :style="{ width: '200px' }" :min="0" :max="7200" theme="column" />
+                <div class="form-tips">{{ t('page.access.config.cors_max_age_tips') }}</div>
+              </t-form-item>
+
               <t-divider align="left">{{ t('page.access.config.section_behavior') }}</t-divider>
 
               <t-form-item :label="t('page.access.config.label_unauth_action')" name="unauth_action">
@@ -267,6 +291,11 @@ const INITIAL_CONFIG = {
   service_token_header: '',
   // 服务令牌明文只在提交时传，后端只存 sha256；留空表示保持原样不动
   service_tokens: '',
+  // 跨源(CORS)：全空即不启用，存量部署行为不变
+  cors_allow_origins: '',
+  cors_allow_methods: '',
+  cors_allow_headers: '',
+  cors_max_age: 0,
   unauth_action: 'auto',
   pass_identity_header: 0,
   force_secure_cookie: 0,
@@ -312,6 +341,10 @@ function getDetail() {
           bypass_ip_group_code: d.bypass_ip_group_code ?? '',
           service_token_header: d.service_token_header ?? '',
           service_tokens: '',
+          cors_allow_origins: d.cors_allow_origins ?? '',
+          cors_allow_methods: d.cors_allow_methods ?? '',
+          cors_allow_headers: d.cors_allow_headers ?? '',
+          cors_max_age: d.cors_max_age ?? 0,
           unauth_action: d.unauth_action || 'auto',
           pass_identity_header: d.pass_identity_header ?? 0,
           force_secure_cookie: d.force_secure_cookie ?? 0,

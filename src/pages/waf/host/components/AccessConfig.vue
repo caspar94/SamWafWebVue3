@@ -73,6 +73,70 @@
         </t-radio-group>
       </t-tooltip>
     </t-form-item>
+    <t-form-item :label="t('page.host.access.cors_allow_origins')">
+      <t-tooltip
+        :content="t('page.host.access.cors_allow_origins_tips')"
+        placement="top"
+        :overlay-style="{ width: '420px' }"
+        show-arrow
+      >
+        <t-textarea
+          v-model="local.cors_allow_origins"
+          :style="{ width: '480px' }"
+          :autosize="{ minRows: 2, maxRows: 5 }"
+          placeholder="https://app.example.com"
+          @change="updateParent"
+        />
+      </t-tooltip>
+    </t-form-item>
+    <t-form-item :label="t('page.host.access.cors_allow_methods')">
+      <t-tooltip
+        :content="t('page.host.access.cors_allow_methods_tips')"
+        placement="top"
+        :overlay-style="{ width: '380px' }"
+        show-arrow
+      >
+        <t-input
+          v-model="local.cors_allow_methods"
+          :style="{ width: '480px' }"
+          placeholder="GET,POST,PUT,PATCH,DELETE,OPTIONS"
+          @change="updateParent"
+        />
+      </t-tooltip>
+    </t-form-item>
+    <t-form-item :label="t('page.host.access.cors_allow_headers')">
+      <t-tooltip
+        :content="t('page.host.access.cors_allow_headers_tips')"
+        placement="top"
+        :overlay-style="{ width: '380px' }"
+        show-arrow
+      >
+        <t-input
+          v-model="local.cors_allow_headers"
+          :style="{ width: '480px' }"
+          placeholder="Content-Type,Authorization"
+          @change="updateParent"
+        />
+      </t-tooltip>
+    </t-form-item>
+    <t-form-item :label="t('page.host.access.cors_max_age')">
+      <t-tooltip
+        :content="t('page.host.access.cors_max_age_tips')"
+        placement="top"
+        :overlay-style="{ width: '380px' }"
+        show-arrow
+      >
+        <t-input-number
+          v-model="local.cors_max_age"
+          :style="{ width: '200px' }"
+          :min="0"
+          :max="7200"
+          theme="column"
+          @change="updateParent"
+        />
+      </t-tooltip>
+    </t-form-item>
+
     <t-alert v-if="cacheConflict" theme="error" :message="t('page.host.access.cache_conflict')" style="margin-top: 16px" />
   </div>
 </template>

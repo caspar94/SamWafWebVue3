@@ -199,6 +199,11 @@ export const INITIAL_ACCESS = {
   require_otp: "0",
   unauth_action: "",
   allow_ip_group_code: "",
+  // 跨源(CORS)：留空=沿用全局配置，填 "-" =本站点显式关闭跨源
+  cors_allow_origins: "",
+  cors_allow_methods: "",
+  cors_allow_headers: "",
+  cors_max_age: 0,
 };
 
 // CSRF 防护初始化数据（is_enable/allow_empty_ref 为字符串便于 t-radio 绑定；protect_methods 为数组便于 t-checkbox-group 绑定）
