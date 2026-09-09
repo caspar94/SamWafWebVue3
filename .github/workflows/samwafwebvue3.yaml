@@ -103,27 +103,27 @@ jobs:
       run_win7: true
 
   trigger-samwaf-build:
-    name: Trigger SamWaf backend build
+    name: Trigger SamWaf backend workflow
     needs: [build, dispatch_config]
     if: needs.dispatch_config.outputs.configured == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch backend build
+      - name: Dispatch backend workflow
         uses: actions/github-script@v7
         env:
           FRONTEND_REF: ${{ github.sha }}
-          FRONTEND_RUN_ID: ${{ github.run_id }}
         with:
           github-token: ${{ secrets.BACKEND_DISPATCH_TOKEN }}
           script: |
-            await github.rest.repos.createDispatchEvent({
+            await github.rest.actions.createWorkflowDispatch({
               owner: 'caspar94',
               repo: 'SamWaf',
-              event_type: 'frontend-updated',
-              client_payload: {
+              workflow_id: 'full-platform-test.yml',
+              ref: 'main',
+              inputs: {
                 frontend_ref: process.env.FRONTEND_REF,
-                frontend_run_id: process.env.FRONTEND_RUN_ID,
-                frontend_repository: `${context.repo.owner}/${context.repo.repo}`,
+                run_macos: 'true',
+                run_win7: 'true',
               },
             });
-            core.notice(`SamWaf backend build dispatched for frontend ${process.env.FRONTEND_REF}`);
+            core.notice(`SamWaf backend workflow dispatched for frontend ${process.env.FRONTEND_REF}`);
