@@ -11,20 +11,26 @@
       <t-tabs default-value="theme" class="setting-tabs">
       <t-tab-panel value="theme" :label="t('page.right_setting.tab_theme')">
       <div class="setting-group-title">{{ t('page.right_setting.theme_mode') }}</div>
-      <t-radio-group :value="settingStore.mode" @change="(v: any) => settingStore.updateConfig({ mode: v })">
-        <div v-for="item in modeOptions" :key="item.type" class="setting-layout-drawer">
-          <div>
-            <t-radio-button :value="item.type">
-              <img :src="item.icon" :alt="item.type" />
-            </t-radio-button>
-            <p style="text-align: center; margin-top: 8px">{{ item.text }}</p>
-          </div>
+      <t-radio-group
+        class="setting-mode-group"
+        :value="settingStore.mode"
+        @change="(v: any) => settingStore.updateConfig({ mode: v })"
+      >
+        <div v-for="item in modeOptions" :key="item.type" class="setting-mode-option">
+          <t-radio-button :value="item.type" class="setting-mode-button">
+            <img :src="item.icon" :alt="item.text" />
+          </t-radio-button>
+          <p class="setting-mode-label">{{ item.text }}</p>
         </div>
       </t-radio-group>
 
       <div class="setting-group-title">{{ t('page.right_setting.theme_color') }}</div>
-      <t-radio-group :value="settingStore.brandTheme" @change="(v: any) => settingStore.updateConfig({ brandTheme: v })">
-        <div v-for="item in COLOR_OPTIONS" :key="item.name" class="setting-layout-drawer">
+      <t-radio-group
+        class="setting-color-group"
+        :value="settingStore.brandTheme"
+        @change="(v: any) => settingStore.updateConfig({ brandTheme: v })"
+      >
+        <div v-for="item in COLOR_OPTIONS" :key="item.name" class="setting-color-option">
           <t-radio-button :value="item.name" class="setting-layout-color-group">
             <span class="color-block" :style="{ background: item.color }" />
           </t-radio-button>
@@ -148,36 +154,84 @@ function handleClearSettings() {
   margin-top: 0;
 }
 
-.setting-drawer-container .t-radio-group.t-size-m {
-  min-height: 32px;
+.setting-drawer-container .setting-mode-group,
+.setting-drawer-container .setting-color-group {
   width: 100%;
   height: auto;
-  justify-content: space-between;
-  align-items: center;
+  min-height: 0;
+  max-width: none;
+  align-items: flex-start;
 }
 
-.setting-drawer-container .setting-layout-drawer {
+.setting-drawer-container .setting-mode-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.setting-drawer-container .setting-color-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+.setting-drawer-container .setting-mode-option,
+.setting-drawer-container .setting-color-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  min-width: 0;
 }
 
-.setting-drawer-container .setting-layout-drawer .t-radio-button {
-  display: inline-flex;
-  max-height: 78px;
-  padding: 8px;
-  border-radius: var(--td-radius-default);
-  border: 2px solid var(--td-component-border);
+.setting-drawer-container .setting-mode-option {
+  width: 100%;
+}
+
+.setting-drawer-container .setting-mode-button {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80px !important;
+  min-width: 0;
+  max-height: none !important;
+  box-sizing: border-box;
+  padding: 6px !important;
+  overflow: hidden;
+  border: 2px solid var(--td-component-border) !important;
+  border-radius: 10px !important;
+  background: var(--td-bg-color-container);
+}
+
+.setting-drawer-container .setting-mode-button > .t-radio-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.setting-drawer-container .setting-mode-button img {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
-.setting-drawer-container .setting-layout-drawer .t-radio-button > .t-radio-button__label {
-  display: inline-flex;
+.setting-drawer-container .setting-mode-label {
+  margin: 8px 0 0;
+  color: var(--td-text-color-primary);
+  line-height: 22px;
+  text-align: center;
 }
 
-.setting-drawer-container .setting-layout-drawer .t-is-checked {
-  border: 2px solid var(--td-brand-color) !important;
+.setting-drawer-container .setting-mode-button.t-is-checked {
+  border-color: var(--td-brand-color) !important;
 }
 
 .setting-drawer-container .setting-layout-color-group {

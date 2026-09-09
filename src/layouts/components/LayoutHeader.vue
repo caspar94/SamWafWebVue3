@@ -30,12 +30,6 @@
       </t-button>
     </t-tooltip>
 
-    <!-- 联系我们 -->
-    <t-tooltip v-if="!settingStore.isMobile" placement="bottom" :content="t('topNav.contract')">
-      <t-button theme="default" shape="square" variant="text" @click="sendMail">
-        <mail-icon />
-      </t-button>
-    </t-tooltip>
     <!-- 帮助文档 -->
     <t-tooltip placement="bottom" :content="t('topNav.help_document')">
       <t-button theme="default" shape="square" variant="text" @click="navToHelper">
@@ -173,7 +167,6 @@ import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next';
 import type { DropdownProps, TableProps } from 'tdesign-vue-next';
 import {
   HelpCircleIcon,
-  MailIcon,
   NotificationErrorIcon,
   SettingIcon,
   TranslateIcon,
@@ -285,10 +278,6 @@ async function onUserAction(data: { value?: string | number }) {
 
 function navToHelper() {
   window.open(getOnlineUrl());
-}
-
-function sendMail() {
-  window.location.href = 'mailto:samwafgo@gmail.com';
 }
 
 function resetServer() {
