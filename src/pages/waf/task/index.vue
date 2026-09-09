@@ -205,7 +205,6 @@ const task_method_type = computed(() => [
   { label: t('page.task.task_method_type.counter'), value: 'task_counter' },
   { label: t('page.task.task_method_type.delay_info'), value: 'task_delay_info' },
   { label: t('page.task.task_method_type.load_config'), value: 'task_load_config' },
-  { label: t('page.task.task_method_type.reflush_wechat_access_token'), value: 'task_reflush_wechat_access_token' },
   { label: t('page.task.task_method_type.delete_history_info'), value: 'task_delete_history_info' },
   { label: t('page.task.task_method_type.delete_history_download_file'), value: 'task_delete_history_download_file' },
   { label: t('page.task.task_method_type.ssl_order_renew'), value: 'task_ssl_order_renew' },

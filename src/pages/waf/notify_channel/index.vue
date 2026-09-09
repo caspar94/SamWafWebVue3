@@ -16,7 +16,6 @@
                 <t-option value="feishu" :label="t('page.notify_channel.type_feishu')"></t-option>
                 <t-option value="email" :label="t('page.notify_channel.type_email')"></t-option>
                 <t-option value="serverchan" :label="t('page.notify_channel.type_serverchan')"></t-option>
-                <t-option value="wechatwork" :label="t('page.notify_channel.type_wechatwork')"></t-option>
                 <t-option value="webhook" :label="t('page.notify_channel.type_webhook')"></t-option>
               </t-select>
             </t-form-item>
@@ -43,7 +42,6 @@
             <t-tag v-else-if="row.type === 'feishu'" theme="success">{{ t('page.notify_channel.type_feishu') }}</t-tag>
             <t-tag v-else-if="row.type === 'email'" theme="warning">{{ t('page.notify_channel.type_email') }}</t-tag>
             <t-tag v-else-if="row.type === 'serverchan'" theme="danger">{{ t('page.notify_channel.type_serverchan') }}</t-tag>
-            <t-tag v-else-if="row.type === 'wechatwork'" theme="primary">{{ t('page.notify_channel.type_wechatwork') }}</t-tag>
             <t-tag v-else-if="row.type === 'webhook'" theme="success">{{ t('page.notify_channel.type_webhook') }}</t-tag>
             <t-tag v-else theme="default">{{ row.type }}</t-tag>
           </template>
@@ -81,7 +79,6 @@
             <t-option value="feishu" :label="t('page.notify_channel.type_feishu')"></t-option>
             <t-option value="email" :label="t('page.notify_channel.type_email')"></t-option>
             <t-option value="serverchan" :label="t('page.notify_channel.type_serverchan')"></t-option>
-            <t-option value="wechatwork" :label="t('page.notify_channel.type_wechatwork')"></t-option>
             <t-option value="webhook" :label="t('page.notify_channel.type_webhook')"></t-option>
           </t-select>
         </t-form-item>
@@ -89,8 +86,8 @@
         <!-- 通用 Webhook 配置 -->
         <webhook-config v-if="formData.type === 'webhook'" :form="formData" />
 
-        <!-- 钉钉、飞书和企业微信配置 -->
-        <template v-if="formData.type === 'dingtalk' || formData.type === 'feishu' || formData.type === 'wechatwork'">
+        <!-- 钉钉、飞书配置 -->
+        <template v-if="formData.type === 'dingtalk' || formData.type === 'feishu'">
           <t-form-item :label="t('page.notify_channel.label_webhook_url')" name="webhook_url">
             <t-input
               v-model="formData.webhook_url"
@@ -98,7 +95,7 @@
               :placeholder="t('page.notify_channel.webhook_placeholder')"
             ></t-input>
           </t-form-item>
-          <t-form-item v-if="formData.type !== 'wechatwork'" :label="t('page.notify_channel.label_secret')" name="secret">
+          <t-form-item :label="t('page.notify_channel.label_secret')" name="secret">
             <t-input
               v-model="formData.secret"
               :style="{ width: '480px' }"
@@ -107,17 +104,6 @@
               :placeholder="t('page.notify_channel.secret_placeholder')"
             ></t-input>
           </t-form-item>
-          <t-alert v-if="formData.type === 'wechatwork'" theme="info" style="margin-top: 12px">
-            <div style="line-height: 1.8">
-              <div style="font-weight: bold; margin-bottom: 8px">📝 如何获取企业微信机器人Webhook：</div>
-              <div style="font-size: 12px; color: #666">
-                <div>1. 在企业微信群聊中，点击右上角「···」→「添加群机器人」</div>
-                <div>2. 选择「新创建一个机器人」，设置机器人名称和头像</div>
-                <div>3. 复制生成的Webhook地址到上方输入框</div>
-                <div style="margin-top: 8px; color: #e37318">💡 提示：企业微信机器人无需配置密钥</div>
-              </div>
-            </div>
-          </t-alert>
         </template>
 
         <!-- Server酱配置 -->
@@ -138,10 +124,10 @@
               <div style="font-size: 12px; color: #666">
                 <div>
                   1. 访问
-                  <a href="https://sct.ftqq.com/" target="_blank" style="color: #0052d9">Server酱官网</a> 并使用微信扫码登录
+                  <a href="https://sct.ftqq.com/" target="_blank" style="color: #0052d9">Server酱官网</a> 并完成登录
                 </div>
                 <div>2. 在控制台页面复制您的SendKey</div>
-                <div>3. 在"消息通道"页面配置接收通知的平台（微信、企业微信、钉钉等）</div>
+                <div>3. 在"消息通道"页面配置接收通知的平台</div>
                 <div style="margin-top: 8px; color: #e37318">💡 提示：支持标准格式(SCT开头)和sctp私有部署格式</div>
               </div>
             </div>
@@ -265,7 +251,6 @@
             <t-option value="feishu" :label="t('page.notify_channel.type_feishu')"></t-option>
             <t-option value="email" :label="t('page.notify_channel.type_email')"></t-option>
             <t-option value="serverchan" :label="t('page.notify_channel.type_serverchan')"></t-option>
-            <t-option value="wechatwork" :label="t('page.notify_channel.type_wechatwork')"></t-option>
             <t-option value="webhook" :label="t('page.notify_channel.type_webhook')"></t-option>
           </t-select>
         </t-form-item>
@@ -273,12 +258,12 @@
         <!-- 通用 Webhook 配置 -->
         <webhook-config v-if="formEditData.type === 'webhook'" :form="formEditData" />
 
-        <!-- 钉钉、飞书和企业微信配置 -->
-        <template v-if="formEditData.type === 'dingtalk' || formEditData.type === 'feishu' || formEditData.type === 'wechatwork'">
+        <!-- 钉钉、飞书配置 -->
+        <template v-if="formEditData.type === 'dingtalk' || formEditData.type === 'feishu'">
           <t-form-item :label="t('page.notify_channel.label_webhook_url')" name="webhook_url">
             <t-input v-model="formEditData.webhook_url" :style="{ width: '480px' }"></t-input>
           </t-form-item>
-          <t-form-item v-if="formEditData.type !== 'wechatwork'" :label="t('page.notify_channel.label_secret')" name="secret">
+          <t-form-item :label="t('page.notify_channel.label_secret')" name="secret">
             <t-input
               v-model="formEditData.secret"
               :style="{ width: '480px' }"
@@ -294,17 +279,6 @@
               {{ t('page.notify_channel.secret_keep_tip') }}
             </div>
           </t-form-item>
-          <t-alert v-if="formEditData.type === 'wechatwork'" theme="info" style="margin-top: 12px">
-            <div style="line-height: 1.8">
-              <div style="font-weight: bold; margin-bottom: 8px">📝 如何获取企业微信机器人Webhook：</div>
-              <div style="font-size: 12px; color: #666">
-                <div>1. 在企业微信群聊中，点击右上角「···」→「添加群机器人」</div>
-                <div>2. 选择「新创建一个机器人」，设置机器人名称和头像</div>
-                <div>3. 复制生成的Webhook地址到上方输入框</div>
-                <div style="margin-top: 8px; color: #e37318">💡 提示：企业微信机器人无需配置密钥</div>
-              </div>
-            </div>
-          </t-alert>
         </template>
 
         <!-- Server酱配置 -->
@@ -334,10 +308,10 @@
               <div style="font-size: 12px; color: #666">
                 <div>
                   1. 访问
-                  <a href="https://sct.ftqq.com/" target="_blank" style="color: #0052d9">Server酱官网</a> 并使用微信扫码登录
+                  <a href="https://sct.ftqq.com/" target="_blank" style="color: #0052d9">Server酱官网</a> 并完成登录
                 </div>
                 <div>2. 在控制台页面复制您的SendKey</div>
-                <div>3. 在"消息通道"页面配置接收通知的平台（微信、企业微信、钉钉等）</div>
+                <div>3. 在"消息通道"页面配置接收通知的平台</div>
                 <div style="margin-top: 8px; color: #e37318">💡 提示：支持标准格式(SCT开头)和sctp私有部署格式</div>
               </div>
             </div>
@@ -690,7 +664,7 @@ async function handleStatusChange(row: Record<string, any>) {
 const SECRET_CLEAR_SENTINEL = '__SAMWAF_CLEAR__';
 
 // 各渠道类型真正会用到的密钥字段：
-//   secret       —— 钉钉/飞书的签名密钥（企业微信不需要）
+//   secret       —— 钉钉/飞书的签名密钥
 //   access_token —— Server酱的 SendKey
 const TYPES_USING_SECRET = ['dingtalk', 'feishu'];
 const TYPES_USING_ACCESS_TOKEN = ['serverchan'];

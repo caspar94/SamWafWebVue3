@@ -16,7 +16,7 @@
     <search v-if="!settingStore.isMobile" />
 
     <!-- 系统监控（移动端隐藏） -->
-    <system-monitor-widget v-if="!settingStore.isMobile" @open-wechat="wechatVisible = true" />
+    <system-monitor-widget v-if="!settingStore.isMobile" />
 
     <!-- 全局通知 -->
     <notice />
@@ -30,12 +30,6 @@
       </t-button>
     </t-tooltip>
 
-    <!-- 微信公众号 -->
-    <t-tooltip v-if="!settingStore.isMobile" placement="bottom" :content="t('topNav.wechat')">
-      <t-button theme="default" shape="square" variant="text" @click="wechatVisible = true">
-        <logo-wechat-stroke-icon />
-      </t-button>
-    </t-tooltip>
     <!-- 联系我们 -->
     <t-tooltip v-if="!settingStore.isMobile" placement="bottom" :content="t('topNav.contract')">
       <t-button theme="default" shape="square" variant="text" @click="sendMail">
@@ -166,15 +160,6 @@ docker compose up -d</pre
       </div>
     </t-dialog>
 
-    <!-- 微信公众号二维码对话框 -->
-    <t-dialog v-model:visible="wechatVisible" width="800px" :header="t('topNav.wechat')" :confirm-btn="null" :cancel-btn="null">
-      <div class="wechat-qr-container">
-        <div class="qr-image-wrapper">
-          <img src="@/assets/assets-mp-samwaf.png" class="qr-image" />
-        </div>
-      </div>
-    </t-dialog>
-
     <!-- 个人自助修改密码 -->
     <change-password-dialog v-model:visible="showChangePwd" :forced="false" />
   </div>
@@ -188,7 +173,6 @@ import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next';
 import type { DropdownProps, TableProps } from 'tdesign-vue-next';
 import {
   HelpCircleIcon,
-  LogoWechatStrokeIcon,
   MailIcon,
   NotificationErrorIcon,
   SettingIcon,
@@ -226,8 +210,6 @@ const updateDesc = ref('');
  * 所以容器环境下后端会直接拒绝升级，前端这里换成镜像更新指引。 */
 const containerType = ref('');
 const selfUpdateAllowed = ref(true);
-/** 微信二维码对话框 */
-const wechatVisible = ref(false);
 /** 版本回退 */
 const rollbackVisible = ref(false);
 const rollbackLoading = ref(false);
@@ -532,20 +514,4 @@ function handleConfirmRollback() {
   background: #52c41a;
 }
 
-/* 微信二维码对话框样式 */
-.wechat-qr-container {
-  text-align: center;
-  padding: 20px;
-}
-
-.wechat-qr-container .qr-image-wrapper {
-  margin-bottom: 16px;
-}
-
-.wechat-qr-container .qr-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 </style>
