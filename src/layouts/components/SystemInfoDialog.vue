@@ -33,18 +33,11 @@
           <component :is="channel.icon" class="sysinfo-channel-icon" />
           {{ channel.label }}
         </a>
-        <a class="sysinfo-channel" href="javascript:void(0)" @click="wechatVisible = !wechatVisible">
-          <logo-wechat-stroke-icon class="sysinfo-channel-icon" />
-          {{ t('common.system_info.wechat_mp') }}
-        </a>
         <!-- 在线客服放最后 -->
         <a class="sysinfo-channel" href="https://service.samwaf.com/" target="_blank" rel="noopener noreferrer">
           <service-icon class="sysinfo-channel-icon" />
           {{ t('common.system_info.online_service') }}
         </a>
-      </div>
-      <div v-if="wechatVisible" class="sysinfo-wechat">
-        <img src="@/assets/assets-mp-samwaf.png" class="sysinfo-wechat-img" alt="SamWaf" />
       </div>
     </div>
   </t-dialog>
@@ -60,7 +53,6 @@ import {
   LogoGithubIcon,
   GitRepositoryIcon,
   MailIcon,
-  LogoWechatStrokeIcon,
 } from 'tdesign-icons-vue-next';
 import { SysRuntimeInfoApi } from '@/apis/sysinfo';
 
@@ -83,7 +75,6 @@ const innerVisible = computed({
 
 const loading = ref(false);
 const loadFailed = ref(false);
-const wechatVisible = ref(false);
 const info = ref<Record<string, any>>({});
 
 interface InfoRow {
@@ -93,7 +84,7 @@ interface InfoRow {
   tagTheme?: string;
 }
 
-/** 在线交流渠道：地址固定，用户反馈问题时可直接跳转（微信公众号、在线客服在模板里单列，排在最后） */
+/** 在线交流渠道：地址固定，用户反馈问题时可直接跳转（在线客服在模板里单列，排在最后） */
 const channels = computed(() => [
   { key: 'doc', label: t('common.system_info.online_document'), url: 'https://doc.samwaf.com', icon: BookOpenIcon },
   { key: 'github', label: t('common.system_info.github_issue'), url: 'https://github.com/samwafgo/SamWaf/issues', icon: LogoGithubIcon },
@@ -192,7 +183,6 @@ const infoRows = computed<InfoRow[]>(() => {
 function loadRuntimeInfo() {
   loading.value = true;
   loadFailed.value = false;
-  wechatVisible.value = false;
   SysRuntimeInfoApi()
     .then((res: any) => {
       if (res && res.code === 0 && res.data) {
@@ -333,13 +323,4 @@ function handleCopy() {
   font-size: 16px;
 }
 
-.sysinfo-wechat {
-  margin-top: 12px;
-  text-align: center;
-}
-
-.sysinfo-wechat-img {
-  max-width: 320px;
-  width: 100%;
-}
 </style>
